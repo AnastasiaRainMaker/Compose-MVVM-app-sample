@@ -1,4 +1,4 @@
-package com.example.composemvvm
+package com.example.composemvvm.datasource.networking
 
 import kotlinx.coroutines.Dispatchers
 

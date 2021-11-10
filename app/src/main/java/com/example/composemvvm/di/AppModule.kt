@@ -1,6 +1,6 @@
 package com.example.composemvvm.di
 
-import com.example.composemvvm.CoroutineDispatcherProvider
+import com.example.composemvvm.datasource.networking.CoroutineDispatcherProvider
 import com.example.composemvvm.datasource.networking.NetworkingService
 import dagger.Module
 import dagger.Provides
