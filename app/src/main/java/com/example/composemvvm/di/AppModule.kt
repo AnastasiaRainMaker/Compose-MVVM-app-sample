@@ -11,7 +11,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
 /**
  * App scoped module for dependency injections
@@ -41,7 +40,6 @@ class AppModule {
             .build()
 
     @Provides
-    @Singleton
     fun provideCoroutineDispatcher() = CoroutineDispatcherProvider()
 
     companion object {

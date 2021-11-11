@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Compose+MVVM</string>
+    <string name="query_limit_reached">You reached query limit for this free api. Please try again later.</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="no_data_available">No data available</string>
+    <string name="problem_occurred">A problem occurred</string>
 </resources>
