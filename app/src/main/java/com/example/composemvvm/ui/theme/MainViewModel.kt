@@ -25,19 +25,22 @@ class MainViewModel @Inject constructor(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
 
+    private var city: String = ""
     private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Empty)
     val uiState: StateFlow<WeatherUiState> = _uiState
 
     fun fetchWeather(zipCode: String) {
         _uiState.value = WeatherUiState.Loading
-        val longLat = convertToLongLat(zipCode)
+        val longLat = parseAddressFromZipcode(zipCode)
         if (longLat.first != null && longLat.second != null) {
             viewModelScope.launch(coroutineDispatcherProvider.IO()) {
                 try {
-                    repository.fetchWeather(long = longLat.first!!, lat = longLat.second!!)
+                    val response = repository.fetchWeather(long = longLat.first!!, lat = longLat.second!!)
                     _uiState.value = WeatherUiState.Loaded(
                         WeatherUiModel(
-                            //todo parse weather here
+                            city = city,
+                            weather = "${response.current.temp}°",
+                            conditions = response.current.weather[0].main
                         )
                     )
                 } catch (ex: Exception) {
@@ -65,11 +68,12 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun convertToLongLat(zipCode: String): Pair<Double?, Double?> {
+    private fun parseAddressFromZipcode(zipCode: String): Pair<Double?, Double?> {
         val address = Geocoder(applicationContext, Locale.getDefault()).getFromLocationName(
             zipCode,
             1
         ).takeIf { it.isNotEmpty() }?.get(0)
+        city = address?.getAddressLine(2).orEmpty()
         return Pair(address?.longitude, address?.latitude)
     }
 
