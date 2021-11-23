@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(private val networkingService: NetworkingService) {
 
-    suspend fun fetchWeather(long: Double, lat: Double): WeatherApiResponse =
+    suspend fun fetchWeather(long: String, lat: String): WeatherApiResponse =
         networkingService.fetchWeather(lon = long, lat = lat)
 
 }

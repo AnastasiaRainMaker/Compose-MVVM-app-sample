@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeMVVMTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -47,7 +46,10 @@ class MainActivity : ComponentActivity() {
 fun CurrentWeatherHeader(mainViewModel: MainViewModel = viewModel()) {
     Column {
         when (val state = mainViewModel.uiState.collectAsState().value) {
-            is MainViewModel.WeatherUiState.Empty -> Text(stringResource(R.string.no_data_available))
+            is MainViewModel.WeatherUiState.Empty -> Text(
+                text = stringResource(R.string.no_data_available),
+                modifier = Modifier.padding(16.dp)
+            )
             is MainViewModel.WeatherUiState.Loading -> CircularProgressIndicator()
             is MainViewModel.WeatherUiState.Error -> ErrorDialog(state.message)
             is MainViewModel.WeatherUiState.Loaded -> WeatherLoadedScreen(state.data)
@@ -86,7 +88,16 @@ fun WeatherLoadedScreen(data: WeatherUiModel) {
                         .padding(8.dp)
                 )
                 Text(
-                    text = card.temperature,
+                    text = card.dayTemp,
+                    style = TextStyle(
+                        color = Color.DarkGray, fontWeight = FontWeight.Medium
+                    ),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .padding(8.dp)
+                )
+                Text(
+                    text = card.nightTemp,
                     style = TextStyle(
                         color = Color.DarkGray, fontWeight = FontWeight.Medium
                     ),
@@ -135,10 +146,9 @@ fun DefaultPreview() {
                     WeatherUiModel(
                         "Austin, TX",
                         weather = "75",
-                        conditions = "Clear",
                         forecastForWeek = arrayListOf(
-                            WeatherForWeekItem("Monday", "65"),
-                            WeatherForWeekItem("Tuesday", "70")
+                            WeatherForWeekItem("Monday", "65", "40"),
+                            WeatherForWeekItem("Tuesday", "70", "20")
                         )
                     )
                 )

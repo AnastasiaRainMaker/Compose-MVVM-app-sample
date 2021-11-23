@@ -2,7 +2,6 @@ package com.example.composemvvm.ui.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composemvvm.R
@@ -25,34 +24,47 @@ class MainViewModel @Inject constructor(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
 
-    private var city: String = ""
+    private var city: String = "Austin, TX"
     private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Empty)
     val uiState: StateFlow<WeatherUiState> = _uiState
 
-    fun fetchWeather(zipCode: String) {
+    init {
+        fetchWeather()
+    }
+
+    private fun fetchWeather() {
         _uiState.value = WeatherUiState.Loading
-        val longLat = parseAddressFromZipcode(zipCode)
-        if (longLat.first != null && longLat.second != null) {
-            viewModelScope.launch(coroutineDispatcherProvider.IO()) {
-                try {
-                    val response = repository.fetchWeather(long = longLat.first!!, lat = longLat.second!!)
-                    _uiState.value = WeatherUiState.Loaded(
-                        WeatherUiModel(
-                            city = city,
-                            weather = "${response.current.temp}°F",
-                            conditions = response.current.weather[0].main
-                        )
+        viewModelScope.launch(coroutineDispatcherProvider.IO()) {
+            try {
+                val response = repository.fetchWeather(long = AUSTIN_LONG, lat = AUSTIN_LAT)
+                var dateCounter = -1
+                _uiState.value = WeatherUiState.Loaded(
+                    WeatherUiModel(
+                        city = city,
+                        weather = "${response.current.temp}°F",
+                        forecastForWeek = response.daily.map {
+                            dateCounter++
+                            WeatherForWeekItem(
+                                day = Calendar.getInstance()
+                                    .also { cal -> cal.add(Calendar.DATE, dateCounter) }
+                                    .getDisplayName(
+                                        Calendar.DAY_OF_WEEK,
+                                        Calendar.LONG,
+                                        Locale.getDefault()
+                                    ).orEmpty(),
+                                dayTemp = "${it.temp.day}°F",
+                                nightTemp = "${it.temp.night}°F"
+                            )
+                        }
                     )
-                } catch (ex: Exception) {
-                    if (ex is HttpException && ex.code() == 429) {
-                        onQueryLimitReached()
-                    } else {
-                        onErrorOccurred()
-                    }
+                )
+            } catch (ex: Exception) {
+                if (ex is HttpException && ex.code() == 429) {
+                    onQueryLimitReached()
+                } else {
+                    onErrorOccurred()
                 }
             }
-        } else {
-            onErrorOccurred()
         }
     }
 
@@ -68,19 +80,15 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun parseAddressFromZipcode(zipCode: String): Pair<Double?, Double?> {
-        val address = Geocoder(applicationContext, Locale.getDefault()).getFromLocationName(
-            zipCode,
-            1
-        ).takeIf { it.isNotEmpty() }?.get(0)
-        city = address?.getAddressLine(2).orEmpty()
-        return Pair(address?.longitude, address?.latitude)
-    }
-
     sealed class WeatherUiState {
         object Empty : WeatherUiState()
         object Loading : WeatherUiState()
         class Loaded(val data: WeatherUiModel) : WeatherUiState()
         class Error(val message: String) : WeatherUiState()
+    }
+
+    companion object {
+        const val AUSTIN_LONG = "-97.733330"
+        const val AUSTIN_LAT = "30.266666"
     }
 }
