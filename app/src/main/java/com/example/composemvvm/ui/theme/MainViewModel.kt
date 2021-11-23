@@ -39,7 +39,7 @@ class MainViewModel @Inject constructor(
                     _uiState.value = WeatherUiState.Loaded(
                         WeatherUiModel(
                             city = city,
-                            weather = "${response.current.temp}°",
+                            weather = "${response.current.temp}°F",
                             conditions = response.current.weather[0].main
                         )
                     )

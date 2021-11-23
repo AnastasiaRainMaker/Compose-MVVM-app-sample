@@ -21,7 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composemvvm.ui.theme.ComposeMVVMTheme
 import com.example.composemvvm.ui.theme.MainViewModel
+import com.example.composemvvm.ui.theme.WeatherForWeekItem
+import com.example.composemvvm.ui.theme.WeatherUiModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,52 +50,54 @@ fun CurrentWeatherHeader(mainViewModel: MainViewModel = viewModel()) {
             is MainViewModel.WeatherUiState.Empty -> Text(stringResource(R.string.no_data_available))
             is MainViewModel.WeatherUiState.Loading -> CircularProgressIndicator()
             is MainViewModel.WeatherUiState.Error -> ErrorDialog(state.message)
-            is MainViewModel.WeatherUiState.Loaded -> {
-                Text(
-                    text = state.data.city,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .padding(24.dp),
-                    style = TextStyle(color = Color.Black, fontWeight = FontWeight.Bold)
-                )
-                Text(
-                    text = state.data.weather,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(24.dp),
-                    style = TextStyle(color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.size(24.dp))
-                LazyRow(modifier = Modifier.fillMaxHeight()) {
-                    items(items = state.data.forecastForWeek, itemContent = { card ->
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text(
-                                text = card.day,
-                                style = TextStyle(
-                                    color = Color.DarkGray, fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier
-                                    .size(14.dp)
-                                    .padding(8.dp)
-                            )
-                            Text(
-                                text = card.temperature,
-                                style = TextStyle(
-                                    color = Color.DarkGray, fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier
-                                    .size(14.dp)
-                                    .padding(8.dp)
-                            )
-                        }
-                    })
-                }
-                Spacer(modifier = Modifier.size(24.dp))
-
-            }
+            is MainViewModel.WeatherUiState.Loaded -> WeatherLoadedScreen(state.data)
         }
     }
 
+}
+
+@Composable
+fun WeatherLoadedScreen(data: WeatherUiModel) {
+    Text(
+        text = data.city,
+        modifier = Modifier
+            .size(18.dp)
+            .padding(24.dp),
+        style = TextStyle(color = Color.Black, fontWeight = FontWeight.Bold)
+    )
+    Text(
+        text = data.weather,
+        modifier = Modifier
+            .size(16.dp)
+            .padding(24.dp),
+        style = TextStyle(color = Color.DarkGray, fontWeight = FontWeight.Bold)
+    )
+    Spacer(modifier = Modifier.size(24.dp))
+    LazyRow(modifier = Modifier.fillMaxWidth()) {
+        items(items = data.forecastForWeek, itemContent = { card ->
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = card.day,
+                    style = TextStyle(
+                        color = Color.DarkGray, fontWeight = FontWeight.Medium
+                    ),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .padding(8.dp)
+                )
+                Text(
+                    text = card.temperature,
+                    style = TextStyle(
+                        color = Color.DarkGray, fontWeight = FontWeight.Medium
+                    ),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .padding(8.dp)
+                )
+            }
+        })
+    }
+    Spacer(modifier = Modifier.size(24.dp))
 }
 
 @Composable
@@ -119,6 +125,24 @@ fun ErrorDialog(message: String) {
 @Composable
 fun DefaultPreview() {
     ComposeMVVMTheme {
-        CurrentWeatherHeader()
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            Column {
+                WeatherLoadedScreen(
+                    WeatherUiModel(
+                        "Austin, TX",
+                        weather = "75",
+                        conditions = "Clear",
+                        forecastForWeek = arrayListOf(
+                            WeatherForWeekItem("Monday", "65"),
+                            WeatherForWeekItem("Tuesday", "70")
+                        )
+                    )
+                )
+            }
+        }
     }
 }
