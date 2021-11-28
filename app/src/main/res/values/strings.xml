@@ -4,4 +4,5 @@
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="no_data_available">No data available</string>
     <string name="problem_occurred">A problem occurred</string>
+    <string name="day_temp">day temperature</string>
 </resources>

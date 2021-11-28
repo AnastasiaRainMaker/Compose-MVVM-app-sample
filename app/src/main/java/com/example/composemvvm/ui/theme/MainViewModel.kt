@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
@@ -41,7 +42,7 @@ class MainViewModel @Inject constructor(
                 _uiState.value = WeatherUiState.Loaded(
                     WeatherUiModel(
                         city = city,
-                        weather = "${response.current.temp}°F",
+                        weather = "${response.current.temp.roundToInt()}°F",
                         forecastForWeek = response.daily.map {
                             dateCounter++
                             WeatherForWeekItem(
