@@ -1,12 +1,13 @@
-package com.example.composemvvm.ui.theme
+package com.example.composemvvm
 
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.composemvvm.R
 import com.example.composemvvm.datasource.WeatherRepository
 import com.example.composemvvm.datasource.networking.CoroutineDispatcherProvider
+import com.example.composemvvm.ui.theme.WeatherForWeekItem
+import com.example.composemvvm.ui.theme.WeatherUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

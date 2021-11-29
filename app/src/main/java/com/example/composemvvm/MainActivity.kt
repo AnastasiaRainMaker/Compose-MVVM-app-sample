@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composemvvm.ui.theme.ComposeMVVMTheme
-import com.example.composemvvm.ui.theme.MainViewModel
 import com.example.composemvvm.ui.theme.WeatherForWeekItem
 import com.example.composemvvm.ui.theme.WeatherUiModel
 import dagger.hilt.android.AndroidEntryPoint
