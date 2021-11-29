@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -14,6 +15,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -34,12 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeMVVMTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    CurrentWeatherHeader()
-                }
+                CurrentWeatherHeader()
             }
         }
     }
@@ -47,7 +45,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CurrentWeatherHeader(mainViewModel: MainViewModel = viewModel()) {
-    Column {
+    Column(
+        Modifier.background(
+            Brush.verticalGradient(
+                listOf(Color.Transparent, Color.Gray, Color.Black),
+                0f,
+                500f,
+            )
+        )
+    ) {
         when (val state = mainViewModel.uiState.collectAsState().value) {
             is MainViewModel.WeatherUiState.Empty -> Text(
                 text = stringResource(R.string.no_data_available),
@@ -161,30 +167,30 @@ fun ErrorDialog(message: String) {
 @Composable
 fun DefaultPreview() {
     ComposeMVVMTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier
-                .width(300.dp)
-                .height(600.dp)
-                .fillMaxSize(),
-            color = MaterialTheme.colors.background
-        ) {
-            Column {
-                WeatherLoadedScreen(
-                    WeatherUiModel(
-                        "Austin, TX",
-                        weather = "75F",
-                        forecastForWeek = arrayListOf(
-                            WeatherForWeekItem("Monday", "65", "40"),
-                            WeatherForWeekItem("Tuesday", "70", "20"),
-                            WeatherForWeekItem("Monday", "65", "40"),
-                            WeatherForWeekItem("Tuesday", "70", "20"),
-                            WeatherForWeekItem("Monday", "65", "40"),
-                            WeatherForWeekItem("Tuesday", "70", "20")
-                        )
+        Column(
+            Modifier
+                .height(1000.dp)
+                .width(400.dp)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color.Gray, Color.Black)
                     )
                 )
-            }
+        ) {
+            WeatherLoadedScreen(
+                WeatherUiModel(
+                    "Austin, TX",
+                    weather = "75F",
+                    forecastForWeek = arrayListOf(
+                        WeatherForWeekItem("Monday", "65", "40"),
+                        WeatherForWeekItem("Tuesday", "70", "20"),
+                        WeatherForWeekItem("Monday", "65", "40"),
+                        WeatherForWeekItem("Tuesday", "70", "20"),
+                        WeatherForWeekItem("Monday", "65", "40"),
+                        WeatherForWeekItem("Tuesday", "70", "20")
+                    )
+                )
+            )
         }
     }
 }
