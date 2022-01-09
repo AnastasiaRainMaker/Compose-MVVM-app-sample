@@ -14,9 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,12 +47,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CurrentWeatherHeader(mainViewModel: MainViewModel = viewModel()) {
+    val heightInPx = with(LocalDensity.current) { LocalConfiguration.current
+        .screenHeightDp.dp.toPx()
+    }
     Column(
-        Modifier.background(
+        Modifier
+            .background(
             Brush.verticalGradient(
                 listOf(Color.Transparent, Color.Gray, Color.Black),
                 0f,
-                500f,
+                heightInPx * 1.1f
             )
         )
     ) {
@@ -58,7 +65,14 @@ fun CurrentWeatherHeader(mainViewModel: MainViewModel = viewModel()) {
                 text = stringResource(R.string.no_data_available),
                 modifier = Modifier.padding(16.dp)
             )
-            is MainViewModel.WeatherUiState.Loading -> CircularProgressIndicator()
+            is MainViewModel.WeatherUiState.Loading ->
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
             is MainViewModel.WeatherUiState.Error -> ErrorDialog(state.message)
             is MainViewModel.WeatherUiState.Loaded -> WeatherLoadedScreen(state.data)
         }
@@ -88,6 +102,7 @@ fun WeatherLoadedScreen(data: WeatherUiModel) {
         cells = GridCells.Fixed(3),
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(start = 12.dp)
     ) {
         items(items = data.forecastForWeek, itemContent = { card ->
